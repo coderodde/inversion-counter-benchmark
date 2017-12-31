@@ -25,18 +25,18 @@ import org.openjdk.jmh.runner.options.OptionsBuilder;
  * @version 1.6 (Dec 31, 2017)
  */
 public class MyBenchmark {
-    
+
     private static final int ARRAY_LENGTH = 1_000_000;
     private static final int MINIMUM_INTEGER_VALUE = -100_000;
     private static final int MAXIMUM_INTEGER_VALUE = +100_000;
     private static final int RUN_LENGTH_IN_PRESORTED_ARRAY = 2000;
-    
+
     @State(Scope.Thread)
     public static class MyRandomState {
-        
+
         private final Random random = new Random();
         Integer[] array;
-        
+
         @Setup(Level.Trial)
         public void createRandomArray() {
             array = createRandomIntegerArray(ARRAY_LENGTH,
@@ -45,12 +45,12 @@ public class MyBenchmark {
                                              random);
         }
     }
-    
+
     @State(Scope.Thread)
     public static class MyPresortedState {
         private final Random random = new Random();
         Integer[] array;
-        
+
         @Setup(Level.Trial)
         public void createPresortedArray() {
             array = createPresortedIntegerArray(ARRAY_LENGTH,
@@ -59,50 +59,50 @@ public class MyBenchmark {
                                                 random);
         }
     }
-    
+
     @Benchmark 
     @BenchmarkMode(Mode.AverageTime) 
     @OutputTimeUnit(TimeUnit.MILLISECONDS)
     public void testMergesortOnRandomArray(MyRandomState state) {
         MergesortInversionCounter.count(state.array);
     }
-    
+
     @Benchmark
     @BenchmarkMode(Mode.AverageTime) 
     @OutputTimeUnit(TimeUnit.MILLISECONDS)
     public void testMergesortOnPresortedArray(MyPresortedState state) {
         MergesortInversionCounter.count(state.array);
     }
-    
+
     @Benchmark 
     @BenchmarkMode(Mode.AverageTime)
     @OutputTimeUnit(TimeUnit.MILLISECONDS)
     public void testNaturalMergesortOnRandomArray(MyRandomState state) {
         NaturalMergesortInversionCounter.count(state.array);
     }
-    
+
     @Benchmark
     @BenchmarkMode(Mode.AverageTime)
     @OutputTimeUnit(TimeUnit.MILLISECONDS)
     public void testNaturalMergesortOnPresortedArray(MyPresortedState state) {
         NaturalMergesortInversionCounter.count(state.array);
     }
-    
+
     private static Integer[] createRandomIntegerArray(int length,
                                                       int minimumIntegerValue,
                                                       int maximumIntegerValue,
                                                       Random random) {
         Integer[] array = new Integer[length];
-        
+
         for (int i = 0; i < length; ++i) {
             array[i] = getRandomIntegerValue(minimumIntegerValue,
                                              maximumIntegerValue,
                                              random);
         }
-        
+
         return array;
     }
-    
+
     private static Integer[] 
         createPresortedIntegerArray(int length,
                                     int minimumIntegerValue,
@@ -117,17 +117,17 @@ public class MyBenchmark {
                         i, 
                         Math.min(length, i + RUN_LENGTH_IN_PRESORTED_ARRAY));
         }
-        
+
         return randomArray;
     }
-    
+
     private static Integer getRandomIntegerValue(int minimumIntegerValue,
                                                  int maximumIntegerValue,
                                                  Random random) {
         return minimumIntegerValue + random.nextInt(maximumIntegerValue -
                                                     minimumIntegerValue + 1);
     }
-    
+
     public static void main(String[] args) 
     throws RunnerException {
         Options options = new OptionsBuilder()
